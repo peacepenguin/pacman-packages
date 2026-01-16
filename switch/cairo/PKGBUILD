@@ -1,0 +1,29 @@
+# Maintainer:  Dave Murphy <davem@devkitpro.org>
+# Contributor: Nathan Rajlich <n@n8.io>
+
+pkgname=switch-cairo
+pkgver=1.18.0
+pkgrel=1
+pkgdesc='Cairo is a 2D graphics library with support for multiple output devices.'
+arch=('any')
+url='https://www.cairographics.org/'
+license=(MPL)
+options=(!strip libtool staticlibs)
+depends=("switch-pixman" "switch-freetype")
+groups=('switch-portlibs')
+makedepends=('switch-pkg-config' 'dkp-toolchain-vars' 'dkp-meson-scripts')
+source=("https://www.cairographics.org/releases/cairo-$pkgver.tar.xz")
+sha256sums=(
+    '243a0736b978a33dee29f9cca7521733b78a65b5418206fef7bd1c3d4cf10b64'
+)
+
+build() {
+    cd cairo-$pkgver
+    /opt/devkitpro/meson-cross.sh switch ../crossfile.txt build -Dtests=disabled -Dfontconfig=disabled -Dzlib=disabled
+    ninja -C build
+}
+
+package() {
+    cd cairo-$pkgver
+    DESTDIR="$pkgdir" ninja -C build install
+}
